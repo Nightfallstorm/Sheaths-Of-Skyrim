@@ -1,5 +1,12 @@
 
 #include "AnimationHook.h"
+#include "Papyrus.h"
+
+void InitializePapyrus() {
+	logger::trace("Initializing Papyrus binding...");
+	auto papyrus = SKSE::GetPapyrusInterface();
+	papyrus->Register(Papyrus::Bind);
+}
 
 void InitializeLog()
 {
@@ -24,6 +31,7 @@ void InitializeLog()
 }
 
 void InitializeHooking() {
+	logger::trace("Initializing Animation hook...");
 	AnimationHook::Install();
 }
 
@@ -41,6 +49,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	InitializeLog();
 	SKSE::Init(a_skse);
 	InitializeHooking();
+	InitializePapyrus();
 	logger::info("Loaded Plugin");
 	return true;
 }
