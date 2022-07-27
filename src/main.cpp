@@ -1,4 +1,5 @@
 
+#include "AnimationHook.h"
 
 void InitializeLog()
 {
@@ -22,6 +23,10 @@ void InitializeLog()
 	logger::info(FMT_STRING("{} v{}"), Version::PROJECT, Version::NAME);
 }
 
+void InitializeHooking() {
+	AnimationHook::Install();
+}
+
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
@@ -35,6 +40,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 {
 	InitializeLog();
 	SKSE::Init(a_skse);
+	InitializeHooking();
 	logger::info("Loaded Plugin");
 	return true;
 }
