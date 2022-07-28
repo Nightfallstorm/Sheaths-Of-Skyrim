@@ -1,4 +1,5 @@
 #pragma once
+#include "ActorSheathStorage.h"
 
 using namespace RE;
 using namespace RE::BSScript;
@@ -16,7 +17,7 @@ namespace AnimationHook
 #ifdef _DEBUG
 			logger::info("Hook called!");
 #endif
-
+			ActorSheathStorage::animationEvent.QueueEvent(akActor->formID, akActor, 2);
 			return func(vm, eventName, unk2, akActor, unk4);
 		}
 

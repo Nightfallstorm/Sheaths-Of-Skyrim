@@ -1,6 +1,19 @@
 
 #include "AnimationHook.h"
 #include "Papyrus.h"
+#include "SaveInterface.h"
+
+void InitializeSerialization()
+{
+	logger::trace("Initializing cosave serialization...");
+	auto* serialization = SKSE::GetSerializationInterface();
+	serialization->SetUniqueID(Serialization::kSaveID);
+	serialization->SetSaveCallback(Serialization::SaveCallback);
+	serialization->SetLoadCallback(Serialization::LoadCallback);
+	serialization->SetRevertCallback(Serialization::RevertCallback);
+	serialization->SetFormDeleteCallback(Serialization::FormDeleteCallback);
+	logger::trace("Cosave serialization initialized.");
+}
 
 void InitializePapyrus() {
 	logger::trace("Initializing Papyrus binding...");
@@ -50,6 +63,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	SKSE::Init(a_skse);
 	InitializeHooking();
 	InitializePapyrus();
+	InitializeSerialization();
 	logger::info("Loaded Plugin");
 	return true;
 }
