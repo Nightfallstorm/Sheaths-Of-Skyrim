@@ -3,4 +3,5 @@ set(sources ${sources}
 	src/PCH.cpp
 	src/Papyrus.cpp
 	src/ActorSheathStorage.cpp
+	src/SheathManipulator.cpp
 )

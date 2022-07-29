@@ -1,8 +1,10 @@
 #pragma once
 #include "ActorSheathStorage.h"
 
+using namespace SKSE::log;
 using namespace RE;
 using namespace RE::BSScript;
+using namespace SKSE;
 
 namespace AnimationHook
 {
@@ -11,15 +13,77 @@ namespace AnimationHook
 
 	struct AnimationEventHook
 	{
-		static void thunk(VM* vm, RE::BSFixedString* eventName, std::int64_t unk2, RE::Actor* akActor,
+		static void thunk(VM* vm, RE::BSFixedString* eventName, std::int64_t unk2, RE::TESObjectREFR* akActor,
 			std::int64_t unk4)
 		{
 #ifdef _DEBUG
 			logger::info("Hook called!");
 #endif
-			ActorSheathStorage::animationEvent.QueueEvent(akActor->formID, akActor, 2);
+			if (akActor == nullptr || akActor->As<RE::Actor>() == nullptr || eventName == nullptr) {
+				logger::info("Invalid animation event for SOS handling");
+				return func(vm, eventName, unk2, akActor, unk4);
+			}
+			handleAnimationEvent(akActor->As<RE::Actor>(), eventName);
+
 			return func(vm, eventName, unk2, akActor, unk4);
 		}
+
+		static void handleAnimationEvent(RE::Actor* akActor, RE::BSFixedString* eventName)
+		{
+			if (!akActor->Is3DLoaded()) {
+				// Actor not loaded, do nothing
+			} else if (IsSOSErection(eventName)) {
+#ifdef _DEBUG
+				std::string DisplayName = akActor->GetDisplayFullName();
+				std::string SOSEventName = eventName->c_str();
+				std::string message = SOSEventName + " on " + DisplayName;
+				RE::DebugNotification(message.c_str());
+#endif
+				ActorSheathStorage::animationEvent.QueueEvent(akActor->formID, akActor, GetSOSErectionlevel(eventName));
+			}
+		}
+
+		inline static std::string SOSFlaccid = "SOSFlaccid";
+		inline static std::string SOSBend = "SOSBend";
+		inline static std::string SOSSlowErect = "SOSSlowErect";
+		inline static std::string SOSFastErect = "SOSFastErect";
+		inline static int SOSFlaccidLevel = -11;
+		inline static int SOSFastErectLevel = 11;
+		inline static int SOSSlowErectLevel = 12;
+
+		static bool IsSOSErection(RE::BSFixedString* eventName)
+		{
+			std::string name = eventName->c_str();
+			return iequals(SOSBend, name.substr(0, SOSBend.size())) || iequals(SOSFastErect, name) ||
+			       iequals(SOSSlowErect, name) || iequals(SOSFlaccid, name);
+		}
+
+		static int GetSOSErectionlevel(RE::BSFixedString* eventName)
+		{
+			std::string name = eventName->c_str();
+			if (iequals(SOSBend, name.substr(0, SOSBend.size()))) {
+				return std::stoi(name.substr(SOSBend.size()));
+			} else if (iequals(SOSFastErect, name)) {
+				return SOSFastErectLevel;
+			} else if (iequals(SOSSlowErect, name)) {
+				return SOSSlowErectLevel;
+			} else {
+				return SOSFlaccidLevel;
+			}
+		}
+
+#pragma warning(push)
+		static bool iequals(const std::string& a, const std::string& b)
+		{
+			std::size_t sz = a.size();
+			if (b.size() != sz)
+				return false;
+			for (unsigned int i = 0; i < sz; ++i)
+				if (tolower(a[i]) != tolower(b[i]))
+					return false;
+			return true;
+		}
+#pragma warning(pop)
 
 		static inline REL::Relocation<decltype(thunk)> func;
 	};

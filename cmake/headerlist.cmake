@@ -4,4 +4,6 @@ set(headers ${headers}
 	src/Papyrus.h
 	src/SaveInterface.h
 	src/ActorSheathStorage.h
+	src/SheathManipulator.h
+	src/ScriptHelper.h
 )
