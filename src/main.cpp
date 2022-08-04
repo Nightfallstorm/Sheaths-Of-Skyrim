@@ -48,6 +48,17 @@ void InitializeHooking() {
 	AnimationHook::Install();
 }
 
+extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
+	SKSE::PluginVersionData v;
+	v.PluginVersion(Version::MAJOR);
+	v.PluginName("Sheaths Of Skyrim");
+	v.AuthorName("nightfallstorm");
+	v.UsesAddressLibrary(true);
+	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST_AE });
+
+	return v;
+}();
+
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
@@ -66,4 +77,9 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	InitializeSerialization();
 	logger::info("Loaded Plugin");
 	return true;
+}
+
+extern "C" DLLEXPORT const char* APIENTRY GetPluginVersion()
+{
+	return Version::NAME.data();
 }
