@@ -39,6 +39,7 @@ namespace Papyrus {
 	bool ChangeActorErection(VM* vm, StackID id, StaticFunctionTag*, Actor* akActor, BGSListForm* SchlongList, std::uint32_t erectionLevel){
 		if (akActor == nullptr || !akActor->Is3DLoaded() || SchlongList == nullptr || SchlongList->forms.size() != 4) {
 			logger::error("Invalid params for changing actor erection!");
+			return false;
 		}
 		ActorSheathStorage::StoreActorErection(akActor, erectionLevel);
 		SheathManipulator::SetErectionLevel(akActor, SchlongList, erectionLevel, true);
