@@ -54,6 +54,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	v.PluginName("Sheaths Of Skyrim");
 	v.AuthorName("nightfallstorm");
 	v.UsesAddressLibrary(true);
+	v.HasNoStructUse(true);
 	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST_AE });
 
 	return v;
