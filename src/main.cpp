@@ -1,25 +1,5 @@
 
 #include "AnimationHook.h"
-#include "Papyrus.h"
-#include "SaveInterface.h"
-
-void InitializeSerialization()
-{
-	logger::trace("Initializing cosave serialization...");
-	auto* serialization = SKSE::GetSerializationInterface();
-	serialization->SetUniqueID(Serialization::kSaveID);
-	serialization->SetSaveCallback(Serialization::SaveCallback);
-	serialization->SetLoadCallback(Serialization::LoadCallback);
-	serialization->SetRevertCallback(Serialization::RevertCallback);
-	serialization->SetFormDeleteCallback(Serialization::FormDeleteCallback);
-	logger::trace("Cosave serialization initialized.");
-}
-
-void InitializePapyrus() {
-	logger::trace("Initializing Papyrus binding...");
-	auto papyrus = SKSE::GetPapyrusInterface();
-	papyrus->Register(Papyrus::Bind);
-}
 
 void InitializeLog()
 {
@@ -47,7 +27,7 @@ void InitializeHooking() {
 	logger::trace("Initializing Animation hook...");
 	AnimationHook::Install();
 }
-
+#ifdef SKYRIM_AE
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	SKSE::PluginVersionData v;
 	v.PluginVersion(Version::MAJOR);
@@ -55,11 +35,10 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	v.AuthorName("nightfallstorm");
 	v.UsesAddressLibrary(true);
 	v.HasNoStructUse(true);
-	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST_AE });
 
 	return v;
 }();
-
+#endif
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
@@ -74,8 +53,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	InitializeLog();
 	SKSE::Init(a_skse);
 	InitializeHooking();
-	InitializePapyrus();
-	InitializeSerialization();
 	logger::info("Loaded Plugin");
 	return true;
 }
